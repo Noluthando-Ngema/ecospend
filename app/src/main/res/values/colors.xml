@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="ecospend_dark_green">#1A3D2E</color>
+    <color name="ecospend_badge_bg">#F4E6D6</color>
+    <color name="ecospend_bg">#F7F5F2</color>
+    <color name="ecospend_gray_text">#4A4A4A</color>
+    <color name="ecospend_input_bg">#F0F0F0</color>
+    <color name="ecospend_brown_underline">#8B5C3A</color>
+    <color name="ecospend_color_1">#F4E6D6</color>
+    <color name="ecospend_color_2">#1A3D2E</color>
+    <color name="ecospend_color_3">#8B5C3A</color>
+    <color name="ecospend_color_4">#D4A373</color>
+    <color name="ecospend_color_5">#FEA05A</color>
+    <color name="ecospend_light_green">#E8F5E9</color>
+    <color name="ecospend_orange">#D97706</color>
+    <color name="ecospend_beige">#E5D3B3</color>
+</resources>
