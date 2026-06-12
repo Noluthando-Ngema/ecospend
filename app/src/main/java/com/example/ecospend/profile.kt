@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -113,9 +114,6 @@ class profile : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun backToDashboard(view: View) {
-        finish()
-    }
 
     fun toProfile(view: View) {
         // Already here
@@ -128,7 +126,7 @@ class profile : AppCompatActivity() {
     }
 
     fun toExpenses(view: View) {
-        val intent = Intent(this, ExpenditureActivity::class.java)
+        val intent = Intent(this, expenditure::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         startActivity(intent)
     }
@@ -149,5 +147,10 @@ class profile : AppCompatActivity() {
         val intent = Intent(this, invest::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         startActivity(intent)
+    }
+    fun backToLogin(view: View) {
+        val intent = Intent(this, login::class.java)
+        startActivity(intent)
+        Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
     }
 }

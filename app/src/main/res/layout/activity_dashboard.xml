@@ -4,12 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/ecospend_bg">
-    <include layout="@layout/layout_toolbar" />
+
+    <include layout="@layout/layout_toolbar" android:id="@+id/toolbar" />
+
     <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottomNav"
+        android:layout_below="@id/toolbar"
         android:padding="24dp">
 
         <LinearLayout
@@ -17,8 +20,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_vertical"
-            android:paddingHorizontal="16dp"
-            >
+            android:paddingHorizontal="16dp">
+
             <!-- title -->
             <TextView
                 android:layout_width="wrap_content"
@@ -47,14 +50,44 @@
                     android:alpha="0.8" />
 
                 <TextView
+                    android:id="@+id/tvBalance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tvBalance"
                     android:layout_marginTop="8dp"
                     android:text="R42,760.98"
                     android:textColor="@color/white"
                     android:textSize="36sp"
                     android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Streak Card -->
+            <LinearLayout
+                android:id="@+id/streakCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_streak_card"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/tvStreakCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="0 Day Streak"
+                    android:textColor="#E65100"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="🔥"
+                    android:textSize="18sp" />
 
             </LinearLayout>
 
@@ -71,17 +104,17 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@color/white"
-                    android:orientation="vertical"
-                    android:onClick="toEnvelopes"
                     android:clickable="true"
                     android:focusable="true"
+                    android:onClick="toEnvelopes"
+                    android:orientation="vertical"
                     android:padding="16dp">
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@android:drawable/ic_dialog_email"
-                        android:backgroundTint="@color/ecospend_dark_green" />
+                        android:backgroundTint="@color/ecospend_dark_green"
+                        android:src="@android:drawable/ic_dialog_email" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -93,9 +126,9 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvEnvelopeBalance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/tvEnvelopeBalance"
                         android:layout_marginTop="4dp"
                         android:text="R0"
                         android:textColor="@color/ecospend_dark_green"
@@ -104,7 +137,9 @@
 
                 </LinearLayout>
 
-                <Space android:layout_width="12dp" android:layout_height="match_parent" />
+                <Space
+                    android:layout_width="12dp"
+                    android:layout_height="match_parent" />
 
                 <!-- expenditure block -->
                 <LinearLayout
@@ -112,17 +147,17 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@color/white"
-                    android:orientation="vertical"
-                    android:onClick="toExpenses"
                     android:clickable="true"
                     android:focusable="true"
+                    android:onClick="toExpenses"
+                    android:orientation="vertical"
                     android:padding="16dp">
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@android:drawable/ic_menu_agenda"
-                        android:backgroundTint="@color/ecospend_dark_green" />
+                        android:backgroundTint="@color/ecospend_dark_green"
+                        android:src="@android:drawable/ic_menu_agenda" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -134,9 +169,9 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvExpenditureBalance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/tvExpenditureBalance"
                         android:layout_marginTop="4dp"
                         android:text="R0"
                         android:textColor="@color/ecospend_dark_green"
@@ -163,42 +198,39 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:onClick="toDashboard"
             android:clickable="true"
             android:focusable="true"
+            android:gravity="center"
+            android:onClick="toDashboard"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_view"
-                android:backgroundTint="@color/ecospend_dark_green" />
-
+                android:backgroundTint="@color/ecospend_dark_green"
+                android:src="@android:drawable/ic_menu_view" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="DASHBOARD"
-                android:textColor="@color/ecospend_gray_text"
-                android:textSize="10sp" />
+                android:textColor="@color/ecospend_dark_green"
+                android:textSize="10sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:onClick="toExpenses"
             android:clickable="true"
             android:focusable="true"
+            android:gravity="center"
+            android:onClick="toExpenses"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_agenda"
-                android:backgroundTint="@color/ecospend_dark_green" />
-
+                android:backgroundTint="@color/ecospend_dark_green"
+                android:src="@android:drawable/ic_menu_agenda" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -211,18 +243,16 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:onClick="toEnvelopes"
             android:clickable="true"
             android:focusable="true"
+            android:gravity="center"
+            android:onClick="toEnvelopes"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_dialog_email"
-                android:backgroundTint="@color/ecospend_dark_green" />
-
+                android:backgroundTint="@color/ecospend_dark_green"
+                android:src="@android:drawable/ic_dialog_email" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -235,21 +265,21 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/ecospend_dark_green"
+            android:clickable="true"
+            android:focusable="true"
             android:gravity="center"
+            android:onClick="toTracking"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_agenda"
-                android:backgroundTint="@color/white"/>
-
+                android:backgroundTint="@color/ecospend_dark_green"
+                android:src="@android:drawable/ic_menu_compass" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TRACKING"
-                android:textColor="@color/white"
+                android:textColor="@color/ecospend_gray_text"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -257,48 +287,44 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:onClick="toInvest"
             android:clickable="true"
             android:focusable="true"
+            android:gravity="center"
+            android:onClick="toInvest"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_myplaces"
-                android:backgroundTint="@color/ecospend_dark_green" />
-
+                android:backgroundTint="@color/ecospend_dark_green"
+                android:src="@android:drawable/ic_menu_myplaces" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="INVEST"
                 android:textColor="@color/ecospend_gray_text"
                 android:textSize="10sp" />
+        </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:onClick="toProfile"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_myplaces"
-                    android:backgroundTint="@color/ecospend_dark_green" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PROFILE"
-                    android:textColor="@color/ecospend_gray_text"
-                    android:textSize="10sp" />
-            </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:onClick="toProfile"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:backgroundTint="@color/ecospend_dark_green"
+                android:src="@android:drawable/ic_menu_gallery" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PROFILE"
+                android:textColor="@color/ecospend_gray_text"
+                android:textSize="10sp" />
         </LinearLayout>
     </LinearLayout>
 

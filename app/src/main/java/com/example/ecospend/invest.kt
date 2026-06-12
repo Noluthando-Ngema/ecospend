@@ -33,13 +33,21 @@ class invest : AppCompatActivity() {
         }
     }
 
-    fun backToDashboard(view: View) {
-        finish()
+    fun toDashboard(view: View) {
+        val intent = Intent(this, dashboard::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+        startActivity(intent)
+
+    }
+    fun toProfile(view: View) {
+        val intent = Intent(this, profile::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+        startActivity(intent)
     }
 
-    // Navigation methods for bottom bar
+    // navigation methods for bottom bar
     fun toExpenses(view: View) {
-        val intent = Intent(this, ExpenditureActivity::class.java)
+        val intent = Intent(this, expenditure::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         startActivity(intent)
     }
@@ -57,8 +65,7 @@ class invest : AppCompatActivity() {
     }
 
     fun toInvest(view: View) {
-       val intent=Intent(this,invest::class.java)
-        intent.flags=Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        startActivity(intent)
+       //already here
     }
+
 }

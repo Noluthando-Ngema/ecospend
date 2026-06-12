@@ -13,5 +13,7 @@ data class User(
     val passwordHash: String,
     val startingBalance: Double = 42760.98, // default for demo
     val currency: String = "ZAR",
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val loginStreak: Int = 0,
+    val lastLoginDate: Long = 0
 )

@@ -60,14 +60,14 @@ class tracking : AppCompatActivity() {
         val expenseDao = DatabaseProvider.getExpenseDao(this)
 
         lifecycleScope.launch {
-            // 1. Load Weekly and Monthly Totals
+            // 1. load weekly and monthly totals
             val weeklyTotal = expenseDao.getPeriodTotal(userId, getWeekStart(), getToday())
             val monthlyTotal = expenseDao.getPeriodTotal(userId, getMonthStart(), getToday())
 
             tvWeekly.text = formatZAR(weeklyTotal ?: 0.0)
             tvMonthly.text = formatZAR(monthlyTotal ?: 0.0)
 
-            // 2. Load Allocation Data
+            // 2. load allocation data
             val categorySpendList = expenseDao.getSpendByCategory(userId)
             val totalSpendAcrossCategories = categorySpendList.sumOf { it.totalSpent }
 
@@ -127,11 +127,8 @@ class tracking : AppCompatActivity() {
         return format.format(amount)
     }
 
-    fun backToDashboard(view: View) {
-        finish()
-    }
 
-    // Navigation methods for bottom bar and dashboard links
+    // navigation methods for bottom bar and dashboard links
     fun toDashboard(view: View) {
         val intent = Intent(this, dashboard::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
@@ -139,7 +136,7 @@ class tracking : AppCompatActivity() {
     }
 
     fun toExpenses(view: View) {
-        val intent = Intent(this, ExpenditureActivity::class.java)
+        val intent = Intent(this, expenditure::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         startActivity(intent)
     }

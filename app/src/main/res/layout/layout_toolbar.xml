@@ -14,7 +14,7 @@
         android:layout_height="24dp"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="backToDashboard"
+        android:onClick="toDashboard"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:contentDescription="Back"
         android:backgroundTint="@color/ecospend_dark_green" />
@@ -43,7 +43,7 @@
             android:id="@+id/ivProfile"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@android:drawable/ic_menu_myplaces"
+            android:src="@drawable/ecopend_mr_krabs"
             android:contentDescription="Profile"
             android:backgroundTint="@color/ecospend_dark_green" />
 
