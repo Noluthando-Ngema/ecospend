@@ -1,42 +1,54 @@
 package com.example.ecospend
 
+import android.Manifest
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.graphics.toColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
-class ExpenditureActivity : AppCompatActivity() {
+class expenditure : AppCompatActivity() {
     private var selectedCategoryId: Long = -1
     private var selectedCategoryColor = "#1A3D2E"
     private var selectedDateMillis: Long = 0
-    private var startTime=""
-    private var endTime=""
+    private var startTime = ""
+    private var endTime = ""
     private var receiptUri: Uri? = null
     private var userId: Long = -1L
+
+    private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_expenditure)
 
-        // Handle window insets
         val mainView = findViewById<View>(R.id.main)
         if (mainView != null) {
             ViewCompat.setOnApplyWindowInsetsListener(mainView) { v, insets ->
@@ -45,18 +57,70 @@ class ExpenditureActivity : AppCompatActivity() {
                 insets
             }
         }
+
         userId = getSharedPreferences("ecospend_prefs", MODE_PRIVATE).getLong("user_id", -1)
         if (userId == -1L) {
+            startActivity(Intent(this, landing::class.java))
             finish()
             return
         }
 
+        setupCameraLaunchers()
         setupDatePicker()
         setupTimePickers()
         loadCategories()
 
         findViewById<Button>(R.id.btnAddExpense).setOnClickListener {
             addExpense()
+        }
+    }
+
+    private fun setupCameraLaunchers() {
+        takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                Toast.makeText(this, "Receipt Captured!", Toast.LENGTH_SHORT).show()
+                // receiptUri is already set before launching
+            }
+        }
+
+        requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                openCamera()
+            } else {
+                Toast.makeText(this, "Camera permission required to scan receipts", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun openCamera() {
+        val photoFile: File? = try {
+            createImageFile()
+        } catch (ex: Exception) {
+            null
+        }
+
+        photoFile?.also {
+            val photoURI: Uri = FileProvider.getUriForFile(
+                this,
+                "${applicationContext.packageName}.fileprovider",
+                it
+            )
+            receiptUri = photoURI
+            takePictureLauncher.launch(photoURI)
+        }
+    }
+
+    private fun createImageFile(): File {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile("RECEIPT_${timeStamp}_", ".jpg", storageDir)
+    }
+
+    fun onScanReceiptClick(view: View) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            openCamera()
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -72,7 +136,8 @@ class ExpenditureActivity : AppCompatActivity() {
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
         }
     }
-    private fun setupTimePickers(){
+
+    private fun setupTimePickers() {
         val etStart = findViewById<EditText>(R.id.etStartTime)
         val etEnd = findViewById<EditText>(R.id.etEndTime)
 
@@ -100,44 +165,50 @@ class ExpenditureActivity : AppCompatActivity() {
     }
 
     private fun loadCategories() {
-        val container = findViewById<LinearLayout>(R.id.categoryContainer)
+        val container = findViewById<LinearLayout>(R.id.categoryContainer) ?: return
         val categoryDao = DatabaseProvider.getCategoryDao(this)
 
         lifecycleScope.launch {
-            val categories = categoryDao.getCategoriesForUser(userId)
-            container.removeAllViews()
+            try {
+                val categories = categoryDao.getCategoriesForUser(userId)
+                container.removeAllViews()
 
-            if (categories.isEmpty()) {
-                Toast.makeText(this@ExpenditureActivity, "Create an envelope first", Toast.LENGTH_SHORT).show()
-                return@launch
-            }
-
-            for (cat in categories) {
-                val btn = Button(this@ExpenditureActivity)
-                btn.text = cat.name
-                btn.setBackgroundColor(cat.color.toColorInt())
-                btn.setTextColor(Color.WHITE)
-                btn.setPadding(24, 12, 24, 12)
-                val params = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                params.setMargins(0, 0, 12, 0)
-                btn.layoutParams = params
-
-                btn.setOnClickListener {
-                    selectedCategoryId = cat.id
-                    selectedCategoryColor = cat.color
-                    updateCategorySelection(btn)
+                if (categories.isEmpty()) {
+                    Toast.makeText(this@expenditure, "Please create an Envelope first!", Toast.LENGTH_LONG).show()
+                    return@launch
                 }
 
-                container.addView(btn)
+                val density = resources.displayMetrics.density
+                for (cat in categories) {
+                    val btn = Button(this@expenditure).apply {
+                        text = cat.name
+                        setTextColor(Color.WHITE)
+                        backgroundTintList = ColorStateList.valueOf(cat.color.toColorInt())
+                        transformationMethod = null
+
+                        val params = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        params.setMargins(0, 0, (12 * density).toInt(), 0)
+                        layoutParams = params
+
+                        setOnClickListener {
+                            selectedCategoryId = cat.id
+                            selectedCategoryColor = cat.color
+                            updateCategorySelection(this)
+                        }
+                    }
+                    container.addView(btn)
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@expenditure, "Error loading envelopes", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun updateCategorySelection(selectedBtn: Button) {
-        val container = findViewById<LinearLayout>(R.id.categoryContainer)
+        val container = findViewById<LinearLayout>(R.id.categoryContainer) ?: return
         for (i in 0 until container.childCount) {
             val btn = container.getChildAt(i) as Button
             btn.alpha = 0.5f
@@ -158,73 +229,39 @@ class ExpenditureActivity : AppCompatActivity() {
             return
         }
         if (selectedCategoryId == -1L) {
-            Toast.makeText(this, "Select a category", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Select an envelope", Toast.LENGTH_SHORT).show()
             return
         }
 
         val amount = amountStr.toDouble()
         val expenseDao = DatabaseProvider.getExpenseDao(this)
-        val goalDao = DatabaseProvider.getGoalDao(this)
-        val rewardDao = DatabaseProvider.getRewardDao(this)
 
         lifecycleScope.launch {
-            // 1. insert the expense
-            expenseDao.insertExpense(
-                Expense(
-                    userId = userId,
-                    categoryId = selectedCategoryId,
-                    amount = amount,
-                    description = desc,
-                    date = selectedDateMillis,
-                    startDateTime = startTime,
-                    endDateTime = endTime,
-                    receiptPath = receiptUri?.toString()
-                )
-            )
-
-            // 2. check for "Not passing budget" reward
-            val goal = goalDao.getGoalForCategory(selectedCategoryId)
-            if (goal != null) {
-                val cal = Calendar.getInstance()
-                cal.timeInMillis = selectedDateMillis
-                cal.set(Calendar.DAY_OF_MONTH, 1)
-                val monthStart = cal.timeInMillis
-                
-                val spentThisMonth = expenseDao.getPeriodTotal(userId, monthStart, System.currentTimeMillis()) ?: 0.0
-                
-                if (spentThisMonth <= goal.targetAmount) {
-                    rewardDao.insertReward(Reward(
+            try {
+                expenseDao.insertExpense(
+                    Expense(
                         userId = userId,
-                        title = "Budget Conscious",
-                        description = "Transaction within your budget limit!",
-                        points = 5,
-                        type = "WITHIN_BUDGET"
-                    ))
-                    Toast.makeText(this@ExpenditureActivity, "Goal maintained! +5 points", Toast.LENGTH_SHORT).show()
-                }
+                        categoryId = selectedCategoryId,
+                        amount = amount,
+                        description = desc,
+                        date = selectedDateMillis,
+                        startDateTime = startTime,
+                        endDateTime = endTime,
+                        receiptPath = receiptUri?.toString()
+                    )
+                )
+                Toast.makeText(this@expenditure, "Expense added", Toast.LENGTH_SHORT).show()
+                finish()
+            } catch (e: Exception) {
+                Toast.makeText(this@expenditure, "Failed to save expense", Toast.LENGTH_SHORT).show()
             }
-
-            Toast.makeText(this@ExpenditureActivity, "Expense added", Toast.LENGTH_SHORT).show()
-            finish()
         }
     }
 
-    fun onScanReceiptClick(view: View) {
-        Toast.makeText(this, "Opening Camera...", Toast.LENGTH_SHORT).show()
-    }
-
-    fun backToDashboard(view: View) {
-        finish()
-    }
-
-    fun toProfile(view: View) {
-        startActivity(Intent(this, profile::class.java))
-    }
-
-    fun toExpenses(view: View) {//already here
-    }
+    fun toDashboard(view: View) { finish() }
+    fun toExpenses(view: View) { }
     fun toEnvelopes(view: View) { startActivity(Intent(this, envelopes::class.java)) }
     fun toTracking(view: View) { startActivity(Intent(this, tracking::class.java)) }
     fun toInvest(view: View) { startActivity(Intent(this, invest::class.java)) }
-    fun toDashboard(view: View) { startActivity(Intent(this, dashboard::class.java)) }
+    fun toProfile(view: View) { startActivity(Intent(this, profile::class.java)) }
 }

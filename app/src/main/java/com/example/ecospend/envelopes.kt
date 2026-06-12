@@ -153,7 +153,7 @@ class envelopes : AppCompatActivity() {
     }
 
     private fun addEnvelopeToUI(name: String, desc: String?, color: String, spent: Double) {
-        // Updated layout reference to activity_item_envelope which contains the correct IDs
+        // reference to activity_item_envelope which contains the correct IDs
         val envelopeView = layoutInflater.inflate(R.layout.activity_item_envelope, activeContainer, false)
 
         envelopeView.findViewById<TextView>(R.id.tvEnvelopeName).text = name
@@ -168,9 +168,6 @@ class envelopes : AppCompatActivity() {
         return String.format(Locale.getDefault(), "R%.2f", amount)
     }
 
-    fun backToDashboard(view: View) {
-        finish()
-    }
 
     fun toProfile(view: View) {
         val intent = Intent(this, profile::class.java)
@@ -178,9 +175,9 @@ class envelopes : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // Navigation methods for bottom bar
+    // navigation methods for bottom bar
     fun toExpenses(view: View) {
-        val intent = Intent(this, ExpenditureActivity::class.java)
+        val intent = Intent(this, expenditure::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         startActivity(intent)
     }

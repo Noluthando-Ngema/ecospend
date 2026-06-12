@@ -18,6 +18,7 @@ class dashboard : AppCompatActivity() {
     private lateinit var tvBalance: TextView
     private lateinit var tvEnvelopesAmount: TextView
     private lateinit var tvExpenditureAmount: TextView
+    private lateinit var tvStreakCount: TextView
     private var userId: Long = -1L
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +30,7 @@ class dashboard : AppCompatActivity() {
         tvBalance = findViewById(R.id.tvBalance)
         tvEnvelopesAmount = findViewById(R.id.tvEnvelopeBalance)
         tvExpenditureAmount = findViewById(R.id.tvExpenditureBalance)
+        tvStreakCount = findViewById(R.id.tvStreakCount)
 
         userId = getSharedPreferences("ecospend_prefs", MODE_PRIVATE).getLong("user_id", -1)
         if (userId == -1L) {
@@ -63,20 +65,23 @@ class dashboard : AppCompatActivity() {
             val user = userDao.getUserById(userId) ?: return@launch
             val totalSpent = expenseDao.getTotalSpent(userId) ?: 0.0
 
-            // 1. Current Balance = Starting Balance - Total Spent
+            // 1. current balance = starting balance - total spent
             val currentBalance = user.startingBalance - totalSpent
             tvBalance.text = formatZAR(currentBalance)
 
-            // 2. Expenditure = Sum of all expenses
+            // 2. expenditure = sum of all expenses
             tvExpenditureAmount.text = formatZAR(totalSpent)
 
-            // 3. Envelopes = Sum of spent amounts per category
+            // 3. envelopes = sum of spent amounts per category
             var totalEnvelopesSpent = 0.0
             val categories = categoryDao.getCategoriesForUser(userId)
             for (cat in categories) {
                 totalEnvelopesSpent += categoryDao.getSpentAmountForCategory(cat.id) ?: 0.0
             }
             tvEnvelopesAmount.text = formatZAR(totalEnvelopesSpent)
+
+            // 4. streak display
+            tvStreakCount.text = "${user.loginStreak} Day Streak"
         }
     }
 
@@ -87,7 +92,7 @@ class dashboard : AppCompatActivity() {
 
     // navigation methods for buttons in the layout
     fun toExpenses(view: View) {
-        startActivity(Intent(this, ExpenditureActivity::class.java))
+        startActivity(Intent(this, expenditure::class.java))
     }
 
     fun toEnvelopes(view: View) {
@@ -100,5 +105,13 @@ class dashboard : AppCompatActivity() {
 
     fun toTracking(view: View) {
         startActivity(Intent(this, tracking::class.java))
+    }
+
+    fun toProfile(view: View) {
+        startActivity(Intent(this, profile::class.java))
+    }
+
+    fun toDashboard(view: View) {
+        // already on dashboard
     }
 }

@@ -162,8 +162,8 @@ class GoalsActivity : AppCompatActivity() {
         return NumberFormat.getCurrencyInstance(Locale("en", "ZA")).format(amount)
     }
 
-    fun backToDashboard(view: View) { startActivity(Intent(this, dashboard::class.java)) }
-    fun toExpenses(view: View) { startActivity(Intent(this, ExpenditureActivity::class.java)) }
+    fun toDashboard(view: View) { startActivity(Intent(this, dashboard::class.java)) }
+    fun toExpenses(view: View) { startActivity(Intent(this, expenditure::class.java)) }
     fun toEnvelopes(view: View) { startActivity(Intent(this, envelopes::class.java)) }
     fun toTracking(view: View) { startActivity(Intent(this, tracking::class.java)) }
     fun toInvest(view: View) { startActivity(Intent(this, invest::class.java)) }
